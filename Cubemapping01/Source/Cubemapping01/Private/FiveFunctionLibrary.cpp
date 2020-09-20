@@ -12,6 +12,23 @@
 #include "VoxelSharedPtr.h"
 #include "Kismet/KismetRenderingLibrary.h"
 
+
+// Texture caching 
+
+inline auto& GetRenderTargetMap()
+{
+	check(IsInGameThread());
+	static TMap<FString, UTextureRenderTarget*> Map;
+	return Map;
+}
+
+inline auto& GetVoxelTextureMap()
+{
+	check(IsInGameThread());
+	static TMap<UTextureRenderTarget*, TVoxelSharedPtr<typename TVoxelTexture<float>::FTextureData>> Map;
+	return Map;
+}
+
 FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTargetChannel(UObject* WorldContext, UTextureRenderTarget2D* RT, EVoxelRGBA Channel)
 {
 	// convert rt to texture2d
@@ -27,11 +44,15 @@ FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTarget
 	**/
 
 	// TVoxelTexture<float> VoxelT = FVoxelTextureUtilities::CreateFromTexture_Float(RT, Channel);
-
+	auto& Data = GetVoxelTextureMap().FindOrAdd(RT);
+	if (Data)
+	{
+		return TVoxelTexture<float>(Data.ToSharedRef());
+	}
 	const auto ColorTexture = FVoxelTextureUtilities::CreateFromTexture_Color(RT);
 
-	TVoxelSharedPtr<typename TVoxelTexture<float>::FTextureData> Data;
-
+	//TVoxelSharedPtr<typename TVoxelTexture<float>::FTextureData> Data;
+	
 	Data = MakeVoxelShared<TVoxelTexture<float>::FTextureData>();
 	Data->SetSize(ColorTexture.GetSizeX(), ColorTexture.GetSizeY());
 
@@ -71,8 +92,13 @@ FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTarget
 	return TVoxelTexture<float>(Data.ToSharedRef());
 }
 
-UTextureRenderTargetCube* UFiveFunctionLibrary::CreateRenderTargetCube(UObject* WorldContext, int32 Width, TextureMipGenSettings MipSettings, FLinearColor ClearColor, TextureCompressionSettings CompressionSettings, bool bHDR)
+UTextureRenderTargetCube* UFiveFunctionLibrary::CreateRenderTargetCube(UObject* WorldContext, int32 Width, TextureMipGenSettings MipSettings, FLinearColor ClearColor, TextureCompressionSettings CompressionSettings, bool bHDR, FString TextureKey)
 {
+	UTextureRenderTarget* Data = GetRenderTargetMap().FindOrAdd(TextureKey);
+	if (Data->IsValidLowLevel())
+	{
+		return (UTextureRenderTargetCube*)Data;
+	}
 	UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::LogAndReturnNull);
 	int32 Height = (int32)Width / 2;
 	if (Width > 0 && Height > 0 && World)
@@ -85,6 +111,7 @@ UTextureRenderTargetCube* UFiveFunctionLibrary::CreateRenderTargetCube(UObject* 
 		NewRenderTargetCube->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
 		NewRenderTargetCube->CompressionSettings = CompressionSettings;
 		NewRenderTargetCube->UpdateResource();
+		Data = NewRenderTargetCube;
 		return NewRenderTargetCube;
 	}
 	return nullptr;
@@ -101,4 +128,51 @@ UTexture2D* UFiveFunctionLibrary::TextureFromRenderTarget2D(UObject* WorldContex
 #endif
 	Texture->UpdateResource();
 	return Texture;
+}
+
+UTextureRenderTarget* UFiveFunctionLibrary::GetCachedRT(FString TextureKey, bool& bSuccess)
+{
+	UTextureRenderTarget* Texture = GetRenderTargetMap().FindRef(TextureKey);
+	bSuccess = Texture != nullptr;
+	return Texture;
+}
+
+void UFiveFunctionLibrary::ClearCache(bool bRenderTargetsOnly, bool bVoxelTexturesOnly)
+{
+	if (bVoxelTexturesOnly || (!bRenderTargetsOnly && !bVoxelTexturesOnly))
+	{
+		TArray<TVoxelSharedPtr<typename TVoxelTexture<float>::FTextureData>> VTArray;
+		GetVoxelTextureMap().GenerateValueArray(VTArray);
+		
+		//for (TVoxelSharedPtr<typename TVoxelTexture<float>::FTextureData> VTP : VTArray)
+		for (int i = 0; i < VTArray.Num(); i++)
+		{
+			TVoxelSharedPtr<typename TVoxelTexture<float>::FTextureData> VTP = VTArray[i];
+			
+			//VTP->~FTextureData();
+			if (VTP)
+			{
+				VTP.Reset();
+			}
+		}
+		
+		GetVoxelTextureMap().Empty();
+	}
+
+	if (bRenderTargetsOnly || (!bRenderTargetsOnly && !bVoxelTexturesOnly))
+	{
+		TArray<UTextureRenderTarget*> RTArray;
+		GetRenderTargetMap().GenerateValueArray(RTArray);
+		for (int i = 0; i < RTArray.Num(); i++)
+		{
+			if (RTArray[i])
+			RTArray[i]->ReleaseResource();
+		}
+		GetRenderTargetMap().Empty();
+	}
+}
+
+void UFiveFunctionLibrary::ReleaseTextureResource(UTextureRenderTarget* RT)
+{
+	if (RT)RT->ReleaseResource();
 }
