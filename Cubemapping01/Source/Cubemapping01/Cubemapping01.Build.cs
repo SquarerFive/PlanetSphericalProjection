@@ -27,7 +27,8 @@ public class Cubemapping01 : ModuleRules
 			{
 				"Core",
 				"Voxel",
-				"RenderCore"
+				"RenderCore",
+				//"RuntimeMeshComponent"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

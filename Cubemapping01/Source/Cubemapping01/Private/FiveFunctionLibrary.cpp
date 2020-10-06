@@ -29,7 +29,7 @@ inline auto& GetVoxelTextureMap()
 	return Map;
 }
 
-FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTargetChannel(UObject* WorldContext, UTextureRenderTarget2D* RT, EVoxelRGBA Channel)
+FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTargetChannel(UObject* WorldContext, UTextureRenderTarget2D* RT, EVoxelRGBA Channel, int MipLevel)
 {
 	// convert rt to texture2d
 	/*
@@ -121,7 +121,7 @@ UTexture2D* UFiveFunctionLibrary::TextureFromRenderTarget2D(UObject* WorldContex
 {
 	UTexture2D* Texture = RT->ConstructTexture2D(WorldContext, "Heightmap", EObjectFlags::RF_NoFlags, CTF_Default);
 	Texture->CompressionSettings = CompressionSettings;
-
+	
 
 #if WITH_EDITORONLY_DATA
 	Texture->MipGenSettings = MipSettings;

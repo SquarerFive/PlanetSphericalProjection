@@ -24,7 +24,7 @@ class CUBEMAPPING01_API UFiveFunctionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContext"), Category = "FiveFunctionLibrary | Texture Utilities")
-		static FVoxelFloatTexture CreateVoxelFloatTextureFromRenderTargetChannel(UObject* WorldContext, UTextureRenderTarget2D* RT, EVoxelRGBA Channel);
+		static FVoxelFloatTexture CreateVoxelFloatTextureFromRenderTargetChannel(UObject* WorldContext, UTextureRenderTarget2D* RT, EVoxelRGBA Channel, int MipLevel);
 
 	UFUNCTION(BlueprintCallable, meta = (WorldContext = "WorldContext"), Category = "FiveFunctionLibrary | Texture Utilities")
 		static UTextureRenderTargetCube* CreateRenderTargetCube(UObject* WorldContext, int32 Width, TextureMipGenSettings MipSettings, FLinearColor ClearColor, TextureCompressionSettings CompressionSettings, bool bHDR, FString TextureKey);
