@@ -1,4 +1,4 @@
-# PlanetSphericalProjection - extended effort
+# PlanetSphericalProjection
 R&amp;D types of methods to project a texture/cubemap onto a sphere.
 
 ![Noise Cubemap](https://media.discordapp.net/attachments/563601152885653533/754965376567083038/unknown.png?width=936&height=533) ![Sphere](https://media.discordapp.net/attachments/563601152885653533/754965420699680799/unknown.png?width=936&height=479)
@@ -11,16 +11,16 @@ R&amp;D types of methods to project a texture/cubemap onto a sphere.
 
 * Memory Usage
 
-Generating textures and cubemaps for every planet is not ideal as typically a cubemap would 1024x512 or higher and having multiple of them (including generated 2D maps) could consume more than 500MB.  A way to mitigate this issue is to implement a pooling system so generated maps for distance planets are deallocated from the memory (maybe saved onto the hard disk?).
+Generating textures and cubemaps for every planet is not ideal as typically a cubemap would 1024x512 or higher and having multiple of them (including generated 2D maps) could consume more than 500MB. I have several ideas on how to solve this problem and which the solutions will be added here.
 
 ## UE4 Plugin
 I have included plugins for the methods I will be researching into. The numbers correspond to the projection method which is being applied.
 
-## Method 1 - Spherical / Equirectangular Cubemap - Mercator Projection
+## Method 1 - Spherical Texture - Mercator Projection
 (example in the 2nd image on the heading) 
-This is the method I am currently going with as UE4 stores it's cubemaps in this format. 
+This is the method I am currently going with as UE4 stores cubemaps in this format. 
 
-These following functions are available as material functions in UE4.
+These following functions are available as material functions in UE4 and can be repliacted in the Voxel Graph.
 
 ### Projecting from
 ```cpp
@@ -55,4 +55,4 @@ http://paulbourke.net/miscellaneous/cubemaps/
 
 http://alexcpeterson.com/2015/08/25/converting-a-cube-map-to-a-sphericalequirectangular-map/
 
-Voxel Plugin Discord (discord.voxelplugin.com)
+Voxel Plugin Discord (discord.voxelplugin.com) - Great info is being shared around in this server.
