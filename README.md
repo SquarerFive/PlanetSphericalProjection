@@ -1,5 +1,5 @@
 # PlanetSphericalProjection
-R&amp;D types of methods to project a texture/cubemap onto a sphere.
+Research types of methods to project a texture/cubemap onto a sphere.
 
 ![Noise Cubemap](https://media.discordapp.net/attachments/563601152885653533/754965376567083038/unknown.png?width=936&height=533) ![Sphere](https://media.discordapp.net/attachments/563601152885653533/754965420699680799/unknown.png?width=936&height=479)
 ## Prelude
