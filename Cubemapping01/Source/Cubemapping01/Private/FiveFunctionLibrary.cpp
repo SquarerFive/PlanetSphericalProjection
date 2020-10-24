@@ -31,19 +31,6 @@ inline auto& GetVoxelTextureMap()
 
 FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTargetChannel(UObject* WorldContext, UTextureRenderTarget2D* RT, EVoxelRGBA Channel, int MipLevel)
 {
-	// convert rt to texture2d
-	/*
-	UTexture2D* Texture = RT->ConstructTexture2D(WorldContext, "AlphaTex", EObjectFlags::RF_NoFlags, CTF_DeferCompression);
-	Texture->CompressionSettings = TextureCompressionSettings::TC_VectorDisplacementmap;
-#if WITH_EDITORONLY_DATA
-	Texture->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
-#endif
-	Texture->SRGB = 0;
-	
-	
-	**/
-
-	// TVoxelTexture<float> VoxelT = FVoxelTextureUtilities::CreateFromTexture_Float(RT, Channel);
 	auto& Data = GetVoxelTextureMap().FindOrAdd(RT);
 	if (Data)
 	{
@@ -51,13 +38,11 @@ FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTarget
 	}
 	const auto ColorTexture = FVoxelTextureUtilities::CreateFromTexture_Color(RT);
 
-	//TVoxelSharedPtr<typename TVoxelTexture<float>::FTextureData> Data;
 	
 	Data = MakeVoxelShared<TVoxelTexture<float>::FTextureData>();
 	Data->SetSize(ColorTexture.GetSizeX(), ColorTexture.GetSizeY());
 
 	const int32 Num = ColorTexture.GetSizeX() * ColorTexture.GetSizeY();
-	//const FColor* FormattedImageData = static_cast<cosnt FColor*>(cast<UTexture2D>(Texture)->PlatformData)
 	const int32 Width = ColorTexture.GetSizeX();
 	const int32 Height = ColorTexture.GetSizeY();
 	for (int32 X = 0; X < Width; X++)
@@ -87,8 +72,6 @@ FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTarget
 		}
 	}
 
-	//Texture->ReleaseResource(); // release it before deleting.
-	//delete Texture;
 	return TVoxelTexture<float>(Data.ToSharedRef());
 }
 
@@ -103,12 +86,12 @@ UTextureRenderTargetCube* UFiveFunctionLibrary::CreateRenderTargetCube(UObject* 
 	int32 Height = (int32)Width / 2;
 	if (Width > 0 && Height > 0 && World)
 	{
-		UTextureRenderTargetCube* NewRenderTargetCube = NewObject<UTextureRenderTargetCube>(WorldContext);
+		UTextureRenderTargetCube* NewRenderTargetCube = NewObject<UTextureRenderTargetCube>(WorldContext, FName(*TextureKey));
 		check(NewRenderTargetCube);
 		NewRenderTargetCube->ClearColor = ClearColor;
 		NewRenderTargetCube->InitAutoFormat(Width);
 		NewRenderTargetCube->bHDR = bHDR;
-		NewRenderTargetCube->MipGenSettings = TextureMipGenSettings::TMGS_NoMipmaps;
+
 		NewRenderTargetCube->CompressionSettings = CompressionSettings;
 		NewRenderTargetCube->UpdateResource();
 		Data = NewRenderTargetCube;
@@ -117,18 +100,16 @@ UTextureRenderTargetCube* UFiveFunctionLibrary::CreateRenderTargetCube(UObject* 
 	return nullptr;
 }
 
+
+/*
 UTexture2D* UFiveFunctionLibrary::TextureFromRenderTarget2D(UObject* WorldContext, UTextureRenderTarget2D* RT, TextureMipGenSettings MipSettings, TextureCompressionSettings CompressionSettings)
 {
 	UTexture2D* Texture = RT->ConstructTexture2D(WorldContext, "Heightmap", EObjectFlags::RF_NoFlags, CTF_Default);
 	Texture->CompressionSettings = CompressionSettings;
-	
-
-#if WITH_EDITORONLY_DATA
-	Texture->MipGenSettings = MipSettings;
-#endif
 	Texture->UpdateResource();
 	return Texture;
 }
+*/
 
 UTextureRenderTarget* UFiveFunctionLibrary::GetCachedRT(FString TextureKey, bool& bSuccess)
 {
