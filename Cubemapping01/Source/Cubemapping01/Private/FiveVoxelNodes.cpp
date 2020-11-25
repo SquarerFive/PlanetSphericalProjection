@@ -1,4 +1,4 @@
-// Copyright (C) Aiden Soedjarwo. 2019 - 2020
+// Copyright (C) SquarerFive. 2019 - 2020
 
 
 #include "FiveVoxelNodes.h"

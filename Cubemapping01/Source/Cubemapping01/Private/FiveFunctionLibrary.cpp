@@ -1,4 +1,4 @@
-// Copyright (C) Aiden Soedjarwo. 2019 - 2020
+// Copyright (C) SquarerFive. 2019 - 2020
 
 
 #include "FiveFunctionLibrary.h"
@@ -36,7 +36,8 @@ FVoxelFloatTexture UFiveFunctionLibrary::CreateVoxelFloatTextureFromRenderTarget
 	{
 		return TVoxelTexture<float>(Data.ToSharedRef());
 	}
-	const auto ColorTexture = FVoxelTextureUtilities::CreateFromTexture_Color(RT);
+	
+	const auto ColorTexture = FVoxelTextureHelpers::CreateFromTexture_Color(RT);
 
 	
 	Data = MakeVoxelShared<TVoxelTexture<float>::FTextureData>();
