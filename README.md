@@ -1,7 +1,7 @@
 # PlanetSphericalProjection
 Research types of methods to project a texture/cubemap onto a sphere.
 
-![Noise Cubemap](https://media.discordapp.net/attachments/563601152885653533/754965376567083038/unknown.png?width=936&height=533) ![Sphere](https://media.discordapp.net/attachments/563601152885653533/754965420699680799/unknown.png?width=936&height=479)
+![Noise Cubemap](/media/Screenshot_376.png) ![Sphere](https://media.discordapp.net/attachments/563601152885653533/754965420699680799/unknown.png?width=936&height=479)
 ## Prelude
  The main purpose of this repo is to explore all possible ways to procedurally generate and project a cubemap onto a sphere. 
  I've chosen a cubemap as it has 6 sides, which is the much better than projecting a single image over a sphere.
