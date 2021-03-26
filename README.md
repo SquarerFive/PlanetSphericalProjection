@@ -7,11 +7,14 @@ Research types of methods to project a texture/cubemap onto a sphere.
  I've chosen a cubemap as it has 6 sides, which is the much better than projecting a single image over a sphere.
  My intention is to have a cubemap for significant terrain features that are obvious when seen from space, extra noise will be applied onto the planet when it is viewed from a close distance. I also plan on using cubemaps for biome definitions.
 
-## Issues
+## Possible Issues
 
 * Memory Usage
 
-Generating textures and cubemaps for every planet is not ideal as typically a cubemap would 1024x512 or higher and having multiple of them (including generated 2D maps) could consume more than 500MB. I have several ideas on how to solve this problem and which the solutions will be added here.
+    - Generating textures and cubemaps for every planet is not ideal as typically a cubemap would 1024x512 or higher and having multiple of them (including generated 2D maps) could consume more than 500MB. This is a silly approach.
+    A better approach would be to store a pool of render targets of varying resolutions, allocating the highest resolution RT to the closest planet, and marking that RT as being already used so we don't attempt to hijack that RT for another planet unless the previous owning planet is not visible.
+
+
 
 ## UE4 Plugin
 I have included plugins for the methods I will be researching into. The numbers correspond to the projection method which is being applied.
